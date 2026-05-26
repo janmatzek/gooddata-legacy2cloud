@@ -1,0 +1,90 @@
+# (C) 2026 GoodData Corporation
+name: Bump version & trigger release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Type of version bump to perform (following semver).'
+        type: choice
+        required: true
+        default: 'patch'
+        options:
+          - major
+          - minor
+          - patch
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.bump.outputs.new_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.TOKEN_GITHUB_YENKINS_ADMIN }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: uv sync --only-group release --locked
+
+      - name: Bump version
+        id: bump
+        run: |
+          NEW_VERSION=$(uv run python ./scripts/bump_version.py ${{ github.event.inputs.bump_type }})
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Bump version in codebase
+        run: make release-ci VERSION=${{ steps.bump.outputs.new_version }}
+
+      - name: Specify release branch
+        id: branch
+        run: |
+          if [ "${{ github.event.inputs.bump_type }}" == "patch" ]; then
+            RELEASE_BRANCH="patch/${{ steps.bump.outputs.new_version }}"
+          else
+            RELEASE_BRANCH="rel/${{ steps.bump.outputs.new_version }}"
+          fi
+          echo "release_branch=$RELEASE_BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Create and push release ${{ steps.bump.outputs.new_version }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -b ${{ steps.branch.outputs.release_branch }}
+          git add -A
+          git commit -m "Release ${{ steps.bump.outputs.new_version }}"
+          git push origin ${{ steps.branch.outputs.release_branch }}
+          git checkout master
+          git merge ${{ steps.branch.outputs.release_branch }}
+          git push origin master
+
+      - name: Push tag v${{ steps.bump.outputs.new_version }}
+        run: |
+          git tag v${{ steps.bump.outputs.new_version }}
+          git push origin v${{ steps.bump.outputs.new_version }}
+
+  create-release:
+    needs: bump-version
+    permissions:
+      contents: write
+    uses: ./.github/workflows/release-github.yaml
+    with:
+      tag: v${{ needs.bump-version.outputs.new_version }}
+
+  publish:
+    needs: [bump-version, create-release]
+    permissions:
+      id-token: write
+    uses: ./.github/workflows/release-pypi.yaml
+    with:
+      tag: v${{ needs.bump-version.outputs.new_version }}
