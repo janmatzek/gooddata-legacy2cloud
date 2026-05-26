@@ -1,7 +1,7 @@
 # (C) 2026 GoodData Corporation
 [project]
 name = "gooddata-legacy2cloud"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.14"
 description = "Transfer workspace metadata from GD Legacy to GD Cloud."
 readme = "README.md"
@@ -59,7 +59,7 @@ requires = ["uv_build>=0.10.9,<0.11.0"]
 build-backend = "uv_build"
 
 [tool.tbump.version]
-current = "0.1.0"
+current = "0.1.1"
 regex = '''
   (?P<major>\d+)
   \.
