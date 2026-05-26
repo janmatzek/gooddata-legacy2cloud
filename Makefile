@@ -1,7 +1,7 @@
 # (C) 2026 GoodData Corporation
 .PHONY: dev
 dev:
-	uv sync
+	uv sync --all-groups
 	uv run pre-commit install
 
 	@echo "\n\nRun 'source .venv/bin/activate' to activate the virtual environment"
@@ -29,3 +29,8 @@ test:
 
 .PHONY: check
 check: format lint test type
+
+.PHONY: release-ci
+release-ci:
+	if [ -z "$(VERSION)" ]; then echo "Usage: 'make release-ci VERSION=X.Y.Z'"; false; else \
+	uv run tbump $(VERSION) --only-patch --non-interactive && uv lock ; fi
