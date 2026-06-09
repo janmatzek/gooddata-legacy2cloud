@@ -9,7 +9,7 @@ def test_get_filter_elements_by_wraps_attributes_as_identifier_refs():
     ctx.legacy_client.get_object.return_value = {
         "attribute": {
             "meta": {"identifier": "attr.region.regionid", "category": "attribute"},
-            "content": {},
+            "content": {"displayForms": ["mock", "values"]},
         }
     }
     ctx.ldm_mappings.search_mapping_identifier.return_value = "region.regionid"

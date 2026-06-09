@@ -1,4 +1,6 @@
 # (C) 2026 GoodData Corporation
+import logging
+
 from gooddata_legacy2cloud.dashboards.data_classes import DashboardContext
 from gooddata_legacy2cloud.helpers import get_cloud_id
 from gooddata_legacy2cloud.metrics.attribute_element import AttributeElement
@@ -7,6 +9,8 @@ from gooddata_legacy2cloud.models.cloud.filter_context import (
     FilterContextModel,
     FilterContextWrapper,
 )
+
+logger = logging.getLogger("migration")
 
 # TODO: refactor FilterContext class to reuse the pydantic mode.
 #   - [ ] Phase 1: class typed internally, get() dumps before return
@@ -60,14 +64,25 @@ class FilterContext:
                 new_attr = self.ctx.ldm_mappings.search_mapping_identifier(
                     obj["attribute"]["meta"]["identifier"]
                 )
-                new_attrs.append(
-                    {
-                        "identifier": {
-                            "id": new_attr,
-                            "type": self._transform_attribute_type_value(obj),
+                # NOTE: This is a workaround for a feature gap. There are Legacy cases of linked filters using references
+                # to record counts in a dataset. I distinguish them from regular linked filters by length of displayForms
+                # metadata. This filter setting cannot be migrated to cloud, so we drop it.
+                if (
+                    len(obj["attribute"].get("content", {}).get("displayForms", []))
+                    == 0
+                ):
+                    logger.warning(
+                        "Attribute display form is empty for `%s`. Skipping.", new_attr
+                    )
+                else:
+                    new_attrs.append(
+                        {
+                            "identifier": {
+                                "id": new_attr,
+                                "type": self._transform_attribute_type_value(obj),
+                            }
                         }
-                    }
-                )
+                    )
             if new_attrs:
                 new_filter_elements.append(
                     {
