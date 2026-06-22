@@ -21,8 +21,11 @@ This toolkit automates the migration of your analytical content, preserving the 
 - Insights (visualizations)
 - KPI Dashboards
 - Pixel Perfect Reports
+- Pixel Perfect Dashboards
 
 The migration can be performed as a complete workspace transfer or selectively for specific objects. The toolkit supports various migration patterns including parent/child workspace migrations and incremental updates.
+
+You can use the [GoodData MCP Server](https://www.gooddata.ai/docs/cloud/ai/mcp-server/) to have an AI agent assist with the metadata transfer.
 
 ## Table of Contents
 
@@ -80,6 +83,12 @@ source .venv/bin/activate
 pip install gooddata-legacy2cloud
 ```
 
+Or install the package as a tool using uv:
+
+```bash
+uv tool install gooddata-legacy2cloud
+```
+
 #### Install from Source
 
 1. **Clone this repository**
@@ -130,6 +139,8 @@ CLOUD_NOTIFICATION_CHANNEL_ID=notification_channel_to_use_with_migrated_exports
 - **DATA_SOURCE_ID**: Get this from your Cloud workspace data source settings (create the data source before the migration)
 
 ### Basic Migration Workflow
+
+> You can use the GoodData MCP Server to guide you through the process. If you want to perform the steps manually, follow the steps outlined below.
 
 Run these scripts in sequence, verifying results after each step:
 

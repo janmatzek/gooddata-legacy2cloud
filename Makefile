@@ -6,13 +6,6 @@ dev:
 
 	@echo "\n\nRun 'source .venv/bin/activate' to activate the virtual environment"
 
-.PHONY: install-skill
-install-skill:
-	mkdir -p ~/.claude/skills/gooddata-platform2cloud-cli
-	ln -sf "$(CURDIR)/.claude/skills/gooddata-platform2cloud-cli/SKILL.md" \
-		~/.claude/skills/gooddata-platform2cloud-cli/SKILL.md
-	@echo "Skill installed. Restart Claude Code to pick up changes."
-
 .PHONY: format
 format:
 	.venv/bin/ruff format .
