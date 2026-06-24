@@ -7,6 +7,10 @@ import csv
 import logging
 import os
 
+from typing import Literal
+
+from gooddata_legacy2cloud.id_mappings import IdMappings
+
 logger = logging.getLogger("migration")
 
 
@@ -63,7 +67,13 @@ def format_mapping_files_info(files: list[str], file_status: dict[str, bool]) ->
 
 
 def filter_objects_by_mapping_files(
-    objects, filter_mode, id_mappings, default_mapping_file, object_type
+    objects: list,
+    filter_mode: Literal["default_only", "all"],
+    id_mappings: IdMappings,
+    default_mapping_file: str,
+    object_type: Literal[
+        "metrics", "insights", "dashboards", "reports", "pixel perfect dashboards"
+    ],
 ):
     """
     Filters objects based on their presence in mapping files.

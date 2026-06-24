@@ -160,7 +160,7 @@ def migrate_dashboards(config: DashboardConfig):
             legacy_dashboards,
             config.object_filter_config.without_mapped_objects,
             dashboard_mappings,
-            config.dashboard_mapping_file,
+            config.dashboard_mapping_file[0],
             "dashboards",
         )
 

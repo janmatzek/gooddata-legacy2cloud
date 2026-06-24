@@ -112,7 +112,7 @@ def migrate_metrics(config: MetricConfig):
             legacy_metrics,
             config.object_filter_config.without_mapped_objects,
             metric_mappings,
-            config.metric_mapping_file,
+            config.metric_mapping_file[0],
             "metrics",
         )
 

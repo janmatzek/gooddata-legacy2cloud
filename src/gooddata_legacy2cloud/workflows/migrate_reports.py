@@ -134,7 +134,7 @@ def migrate_reports(config: ReportConfig):
             legacy_reports,
             config.object_filter_config.without_mapped_objects,
             report_mappings,
-            config.report_mapping_file,
+            config.report_mapping_file[0],
             "reports",
         )
 

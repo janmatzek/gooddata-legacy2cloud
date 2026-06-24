@@ -133,7 +133,7 @@ def migrate_insights(config: InsightConfig):
             legacy_insights,
             config.object_filter_config.without_mapped_objects,
             insight_mappings,
-            config.insight_mapping_file,
+            config.insight_mapping_file[0],
             "insights",
         )
 
